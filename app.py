@@ -9,7 +9,7 @@ from flask import Flask, jsonify
 #################################################
 # Database Setup
 #################################################
-engine = create_engine(f'sqlite:///hawaii.sqlite')
+engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
@@ -17,10 +17,11 @@ Base = automap_base()
 Base.prepare(autoload_with = engine)
 
 # Save references to each table
-
+station = Base.classes.station
+measurement = Base.classes.measurement
 
 # Create our session (link) from Python to the DB
-
+session = Session(engine)
 
 #################################################
 # Flask Setup
@@ -37,10 +38,17 @@ def home():
     print("Welcome to the homepage!")
     return("ROUTES")
 
+@app.route("/api/v1.0/precipitation")
+def precipitation():
+    return("prcp JSON")
 
+@app.route("/api/v1.0/stations")
+def stations():
+    return("stations")
 
-
-
+@app.route("/api/v1.0/tobs")
+def tobs():
+    return("tobs")
 
 if __name__ == "__main__":
     app.run(debug=True)
