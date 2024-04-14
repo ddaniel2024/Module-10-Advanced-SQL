@@ -6,6 +6,8 @@ from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
 
+import datetime as dt
+
 #################################################
 # Database Setup
 #################################################
@@ -36,11 +38,29 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     print("Welcome to the homepage!")
-    return("ROUTES")
+    return (
+        f"Available Routes:<br/>"
+        f"/api/v1.0/precipitation<br/>"
+        f"/api/v1.0/stations<br/>"
+        f"/api/v1.0/tobs<br/>"
+    )
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    return("prcp JSON")
+
+    start_date = dt.datetime(2017,8,23) - dt.timedelta(days=365)
+    rain = session.query(measurement.date, measurement.prcp).filter(measurement.date >= start_date).all()
+
+    session.close()
+
+    precipitation = []
+    for date, prcp in rain:
+        precipitation_dict = {}
+        precipitation_dict["date"] = date
+        precipitation_dict["prcp"] = prcp
+        precipitation.append(precipitation_dict)
+
+    return(jsonify(precipitation))
 
 @app.route("/api/v1.0/stations")
 def stations():
