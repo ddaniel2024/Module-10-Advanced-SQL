@@ -43,7 +43,8 @@ def home():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start>"
+        f"/api/v1.0/<start><br/>"
+        f"/api/v1.0/<start>/<end>"
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -105,7 +106,25 @@ def start(start):
         summary_dict={}
         summary_dict["date"] = date
         summary_dict["TMIN"] = tmin
-        summary_dict["TAVG"] = tavg
+        summary_dict["TAVG"] = round(tavg,1)
+        summary_dict["TMAX"] = tmax
+
+        summary_list.append(summary_dict)
+
+    return(jsonify(summary_list))
+
+@app.route("/api/v1.0/<start>/<end>")
+def start_end(start, end):
+
+    temps = session.query(measurement.date, func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).filter(measurement.date >= start).filter(measurement.date<= end).group_by(measurement.date).all()
+    session.close()
+
+    summary_list = []
+    for date, tmin, tavg, tmax in temps:
+        summary_dict={}
+        summary_dict["date"] = date
+        summary_dict["TMIN"] = tmin
+        summary_dict["TAVG"] = round(tavg,1)
         summary_dict["TMAX"] = tmax
 
         summary_list.append(summary_dict)
