@@ -11,7 +11,7 @@ import datetime as dt
 #################################################
 # Database Setup
 #################################################
-engine = create_engine("sqlite:///Resources/hawaii.sqlite")
+engine = create_engine(f'sqlite:///Resources/hawaii.sqlite')
 
 # reflect an existing database into a new model
 Base = automap_base()
@@ -39,11 +39,21 @@ app = Flask(__name__)
 def home():
     print("Welcome to the homepage!")
     return (
-        f"Available Routes:<br/>"
-        f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start><br/>"
+        f"<b>Available Routes:</b><br/><br/>"
+
+        f"<b>Precipitation Analysis (for the last 12 months)</b><br/>"
+        f"/api/v1.0/precipitation<br/><br/>"
+
+        f"<b>Stations</b><br/>"
+        f"/api/v1.0/stations<br/><br/>"
+
+        f"<b>Temperature Observations (for the most active station, in the last 12 months)</b><br/>"
+        f"/api/v1.0/tobs<br/><br/>"
+
+        f"<b>Temperature Summary, from specified start date (format yyyy-mm-dd) (inclusive)</b><br/>"
+        f"/api/v1.0/<start><br/><br/>"
+
+        f"<b>Temperature Summary, from specified start date to specified end date (format yyyy-mm-dd/yyyy-mm-dd) (inclusive)</b><br/>"
         f"/api/v1.0/<start>/<end>"
     )
 
@@ -88,7 +98,7 @@ def tobs():
 
     tobs_list = []
     for date, tob in tobs:
-        tobs_dict={}
+        tobs_dict = {}
         tobs_dict["date"] = date
         tobs_dict["tobs"] = tob
         tobs_list.append(tobs_dict)
@@ -103,7 +113,7 @@ def start(start):
 
     summary_list = []
     for date, tmin, tavg, tmax in temps:
-        summary_dict={}
+        summary_dict = {}
         summary_dict["date"] = date
         summary_dict["TMIN"] = tmin
         summary_dict["TAVG"] = round(tavg,1)
@@ -121,7 +131,7 @@ def start_end(start, end):
 
     summary_list = []
     for date, tmin, tavg, tmax in temps:
-        summary_dict={}
+        summary_dict = {}
         summary_dict["date"] = date
         summary_dict["TMIN"] = tmin
         summary_dict["TAVG"] = round(tavg,1)
