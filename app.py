@@ -19,8 +19,8 @@ Base = automap_base()
 Base.prepare(autoload_with = engine)
 
 # Save references to each table
-station = Base.classes.station
 measurement = Base.classes.measurement
+station = Base.classes.station
 
 # Create our session (link) from Python to the DB
 session = Session(engine)
@@ -41,19 +41,19 @@ def home():
     return (
         f"<b>Available Routes:</b><br/><br/>"
 
-        f"<b>Precipitation Analysis (for the last 12 months)</b><br/>"
+        f"<b>Precipitation Analysis</b> (for the last 12 months)<br/>"
         f"/api/v1.0/precipitation<br/><br/>"
 
         f"<b>Stations</b><br/>"
         f"/api/v1.0/stations<br/><br/>"
 
-        f"<b>Temperature Observations (for the most active station, in the last 12 months)</b><br/>"
+        f"<b>Temperature Observations</b> (for the most active station, in the last 12 months)<br/>"
         f"/api/v1.0/tobs<br/><br/>"
 
-        f"<b>Temperature Summary, from specified start date (format yyyy-mm-dd) (inclusive)</b><br/>"
+        f"<b>Temperature Summary</b>, from specified start date (format yyyy-mm-dd) (inclusive)<br/>"
         f"/api/v1.0/<start><br/><br/>"
 
-        f"<b>Temperature Summary, from specified start date to specified end date (format yyyy-mm-dd/yyyy-mm-dd) (inclusive)</b><br/>"
+        f"<b>Temperature Summary</b>, from specified start date to specified end date (format yyyy-mm-dd/yyyy-mm-dd) (inclusive)<br/>"
         f"/api/v1.0/<start>/<end>"
     )
 
@@ -76,12 +76,17 @@ def precipitation():
 @app.route("/api/v1.0/stations")
 def stations():
 
-    stations = session.query(station.station).all()
-    session.close()
+    station = Base.classes.station
+    session = Session(engine)
+
+    stations = session.query(station.station, station.name).all()
 
     station_list = []
-    for station in stations:
-        station_list.append(station)
+    for station, name in stations:
+        station_dict = {}
+        station_dict["station"] = station
+        station_dict["name"] = name
+        station_list.append(station_dict)
 
     return(jsonify(station_list))
 
