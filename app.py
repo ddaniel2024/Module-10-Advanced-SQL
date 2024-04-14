@@ -97,15 +97,17 @@ def tobs():
 @app.route("/api/v1.0/<start>")
 def start(start):
 
-    tmin = session.query(measurement.date, func.min(measurement.tobs)).filter(measurement.date >= start).all()
-
+    temps = session.query(measurement.date, func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).filter(measurement.date >= start).group_by(measurement.date).all()
     session.close()
 
     summary_list = []
-    for date, temp in tmin:
+    for date, tmin, tavg, tmax in temps:
         summary_dict={}
         summary_dict["date"] = date
-        summary_dict["temp"] = temp
+        summary_dict["TMIN"] = tmin
+        summary_dict["TAVG"] = tavg
+        summary_dict["TMAX"] = tmax
+
         summary_list.append(summary_dict)
 
     return(jsonify(summary_list))
