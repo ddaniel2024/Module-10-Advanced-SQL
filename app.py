@@ -51,20 +51,25 @@ def precipitation():
     start_date = dt.datetime(2017,8,23) - dt.timedelta(days=365)
     rain = session.query(measurement.date, measurement.prcp).filter(measurement.date >= start_date).all()
 
-    session.close()
-
-    precipitation = []
+    precipitation_list = []
     for date, prcp in rain:
         precipitation_dict = {}
         precipitation_dict["date"] = date
         precipitation_dict["prcp"] = prcp
-        precipitation.append(precipitation_dict)
+        precipitation_list.append(precipitation_dict)
 
-    return(jsonify(precipitation))
+    return(jsonify(precipitation_list))
 
 @app.route("/api/v1.0/stations")
 def stations():
-    return("stations")
+
+    station_activity = session.query(measurement.station, func.count(measurement.station)).group_by(measurement.station).order_by(func.count(measurement.station).desc()).all()
+
+    station_list = []
+    for station, count in station_activity:
+        station_list.append(station)
+
+    return(jsonify(station_list))
 
 @app.route("/api/v1.0/tobs")
 def tobs():
