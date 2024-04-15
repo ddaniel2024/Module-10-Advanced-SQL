@@ -3,6 +3,7 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
+from sqlalchemy import join
 
 from flask import Flask, jsonify
 
@@ -76,19 +77,31 @@ def precipitation():
 @app.route("/api/v1.0/stations")
 def stations():
 
-    station = Base.classes.station
-    session = Session(engine)
-
-    stations = session.query(station.station, station.name).all()
+    stations = session.query(measurement).join(station.elevation, measurement.station == station.station)
 
     station_list = []
-    for station, name in stations:
+    for station, name, lat, lng, elev in stations:
         station_dict = {}
         station_dict["station"] = station
         station_dict["name"] = name
+        station_dict["lat"] = lat
+        station_dict["lng"] = lng
+        station_dict["elevation"] = elev
         station_list.append(station_dict)
 
     return(jsonify(station_list))
+
+    """station_list = []
+    for station, name, lat, lng, elev in stations:
+        station_dict = {}
+        station_dict["station"] = station
+        station_dict["name"] = name
+        station_dict["lat"] = lat
+        station_dict["lng"] = lng
+        station_dict["elevation"] = elev
+        station_list.append(station_dict)
+
+    return(jsonify(station_list))"""
 
 @app.route("/api/v1.0/tobs")
 def tobs():
