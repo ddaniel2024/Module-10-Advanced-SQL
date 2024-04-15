@@ -40,6 +40,7 @@ app = Flask(__name__)
 def home():
     print("Welcome to the homepage!")
     return (
+        # Routes are formatted, and titles are added for easier navigation
         f"<b>Available Routes:</b><br/><br/>"
 
         f"<b>Precipitation Analysis</b> (for the last 12 months)<br/>"
@@ -62,11 +63,11 @@ def home():
 def precipitation():
 
     start_date = dt.datetime(2017,8,23) - dt.timedelta(days=365)
-    rain = session.query(measurement.date, measurement.prcp).filter(measurement.date >= start_date).all()
+    rain_data = session.query(measurement.date, measurement.prcp).filter(measurement.date >= start_date).all()
     session.close()
 
     precipitation_list = []
-    for date, prcp in rain:
+    for date, prcp in rain_data:
         precipitation_dict = {}
         precipitation_dict["date"] = date
         precipitation_dict["prcp"] = prcp
@@ -77,12 +78,12 @@ def precipitation():
 @app.route("/api/v1.0/stations")
 def stations():
 
-    stations = session.query(measurement).join(station.elevation, measurement.station == station.station)
+    station_data = session.query(station.station, station.name, station.latitude, station.longitude, station.elevation).all()
 
     station_list = []
-    for station, name, lat, lng, elev in stations:
+    for id, name, lat, lng, elev in station_data:
         station_dict = {}
-        station_dict["station"] = station
+        station_dict["station"] = id
         station_dict["name"] = name
         station_dict["lat"] = lat
         station_dict["lng"] = lng
@@ -90,18 +91,6 @@ def stations():
         station_list.append(station_dict)
 
     return(jsonify(station_list))
-
-    """station_list = []
-    for station, name, lat, lng, elev in stations:
-        station_dict = {}
-        station_dict["station"] = station
-        station_dict["name"] = name
-        station_dict["lat"] = lat
-        station_dict["lng"] = lng
-        station_dict["elevation"] = elev
-        station_list.append(station_dict)
-
-    return(jsonify(station_list))"""
 
 @app.route("/api/v1.0/tobs")
 def tobs():
