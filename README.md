@@ -6,7 +6,7 @@
 * Flask API based on developed queries:
   * Precipitation data
   * Station Information
-  * Temperature Observation data
+  * Temperature Observation data for the most active station
   * Temperature Statistics after a given date, and for a given date range
 * Code sources:
   * Code for changing density of x-ticks on bar plot:
